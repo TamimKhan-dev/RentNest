@@ -35,19 +35,24 @@ const createPropertyIntoDB = async (
 };
 
 const updatePropertyIntoDB = async (
-  id: number,
+  propertyId: number,
+  landLordId: number,
   payload: IUpdatePropertyPayload,
 ) => {
   const property = await prisma.property.findUnique({
-    where: { id },
+    where: { id: propertyId },
   });
 
   if (!property) {
     throw new Error("Property with this ID doesn't Exist!");
+  }
+
+  if (property.ownerId !== landLordId) {
+    throw new Error("Unauthorized: You do not own this property");
   };
 
   const result = await prisma.property.update({
-    where: { id },
+    where: { id: propertyId },
     data: {
       ...payload,
     },
@@ -56,7 +61,28 @@ const updatePropertyIntoDB = async (
   return result;
 };
 
+const deletePropertyFromDB = async (propertyId: number, landLordId: number) => {
+  const property = await prisma.property.findUnique({
+    where: { id: propertyId },
+  });
+
+  if (!property) {
+    throw new Error("Property with this ID doesn't Exist!")
+  }
+
+  if (property.ownerId !== landLordId) {
+    throw new Error("Unauthorized: You do not own this property");
+  };
+
+  const result = await prisma.property.delete({
+    where: { id: propertyId },
+  });
+
+  return result;
+};
+
 export const landLordService = {
   createPropertyIntoDB,
   updatePropertyIntoDB,
+  deletePropertyFromDB,
 };

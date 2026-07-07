@@ -25,9 +25,14 @@ const createProperty = catchAsync(
 const updateProperty = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const payload = req.body;
-    const id = req.params.id;
+    const propertyId = req.params.id;
+    const landLordId = req.user?.id;
 
-    const result = await landLordService.updatePropertyIntoDB(Number(id), payload);
+    const result = await landLordService.updatePropertyIntoDB(
+      Number(propertyId),
+      Number(landLordId),
+      payload,
+    );
 
     sendResponse(res, {
       success: true,
@@ -38,7 +43,27 @@ const updateProperty = catchAsync(
   },
 );
 
+const deleteProperty = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const propertyId = req.params.id;
+    const landLordId = req.user?.id;
+
+    const result = await landLordService.deletePropertyFromDB(
+      Number(propertyId),
+      Number(landLordId),
+    );
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Property deleted successfully!",
+      data: result,
+    });
+  },
+);
+
 export const landLordController = {
   createProperty,
-  updateProperty
+  updateProperty,
+  deleteProperty,
 };
