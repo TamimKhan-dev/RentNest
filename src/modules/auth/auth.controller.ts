@@ -43,7 +43,8 @@ const loginUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const payload = req.body;
 
-    const { accessToken, refreshToken } = await authService.loginUserFromDB(payload);
+    const { accessToken, refreshToken } =
+      await authService.loginUserFromDB(payload);
 
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
@@ -68,7 +69,22 @@ const loginUser = catchAsync(
   },
 );
 
+const getMyDetails = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+
+    const result = await authService.getMyDetailsFromDB(Number(req.user?.id));
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "User retrived successfully!",
+      data: result,
+    });
+  },
+);
+
 export const authController = {
   registerUser,
+  getMyDetails,
   loginUser,
 };
