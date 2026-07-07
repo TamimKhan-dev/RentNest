@@ -1,5 +1,8 @@
 import { prisma } from "../../lib/prisma";
-import { IPropertyDetailsPayload } from "./landlord.interface";
+import {
+  IPropertyDetailsPayload,
+  IUpdatePropertyPayload,
+} from "./landlord.interface";
 
 const createPropertyIntoDB = async (
   payload: IPropertyDetailsPayload,
@@ -12,7 +15,9 @@ const createPropertyIntoDB = async (
   });
 
   if (!category) {
-    throw new Error("Category you provided doesn't Exist! (Category ID must be between 1 and 4)");
+    throw new Error(
+      "Category you provided doesn't Exist! (Category ID must be between 1 and 4)",
+    );
   }
 
   const createProperty = await prisma.property.create({
@@ -29,6 +34,29 @@ const createPropertyIntoDB = async (
   return result;
 };
 
+const updatePropertyIntoDB = async (
+  id: number,
+  payload: IUpdatePropertyPayload,
+) => {
+  const property = await prisma.property.findUnique({
+    where: { id },
+  });
+
+  if (!property) {
+    throw new Error("Property with this ID doesn't Exist!");
+  };
+
+  const result = await prisma.property.update({
+    where: { id },
+    data: {
+      ...payload,
+    },
+  });
+
+  return result;
+};
+
 export const landLordService = {
   createPropertyIntoDB,
+  updatePropertyIntoDB,
 };
