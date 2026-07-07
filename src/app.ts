@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import { globalErrorHandler } from "./middleware/globalErrorHandler";
 import { notFound } from "./middleware/notFound";
 import { authRoutes } from "./modules/auth/auth.route";
+import { landLordRoutes } from "./modules/landlord/landlord.route";
 
 const app: Application = express();
 
@@ -26,7 +27,8 @@ app.get("/", async (req: Request, res: Response) => {
   });
 });
 
-app.use("/api/auth", authRoutes)
+app.use("/api/auth", authRoutes);
+app.use("/api/landlord", landLordRoutes);
 
 app.use(notFound);
 app.use(globalErrorHandler);
