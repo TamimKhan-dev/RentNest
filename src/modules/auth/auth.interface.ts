@@ -9,3 +9,8 @@ export interface IUserPayload {
     isBanned: boolean;
     role: UserRole;
 }
+
+export interface ILoginPayload {
+    email: string;
+    password: string;
+};
