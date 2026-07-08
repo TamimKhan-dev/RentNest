@@ -1,30 +1,39 @@
 import { prisma } from "../../lib/prisma";
 
-
 const createRentelRequestIntoDB = async (
   userId: number,
   propertyId: number,
 ) => {
-    const property = await prisma.property.findUnique({
-        where: { id: propertyId }
-    });
+  const property = await prisma.property.findUnique({
+    where: { id: propertyId },
+  });
 
-    if (!property) {
-        throw new Error("Property with this ID doesn't Exist!");
-    };
+  const rentalRequest = await prisma.rentalRequest.findFirst({
+    where: { tenantId: userId, propertyId },
+  });
 
-    if (!property.isAvailable) {
-        throw new Error("Property isn't available at this moment");
-    };
+  if (rentalRequest) {
+    throw new Error(
+      "You have already sent rental request to this property owner",
+    );
+  }
 
-    const result = await prisma.rentalRequest.create({
-        data: {
-            tenantId: userId,
-            propertyId: propertyId
-        }
-    });
+  if (!property) {
+    throw new Error("Property with this ID doesn't Exist!");
+  }
 
-    return result;
+  if (!property.isAvailable) {
+    throw new Error("Property isn't available at this moment");
+  }
+
+  const result = await prisma.rentalRequest.create({
+    data: {
+      tenantId: userId,
+      propertyId: propertyId,
+    },
+  });
+
+  return result;
 };
 
 export const rentalRequestService = {

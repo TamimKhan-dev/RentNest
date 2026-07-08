@@ -7,7 +7,16 @@ import httpStatus from "http-status";
 const createRentalRequest = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?.id;
-    const propertyId = req.body.propertyId;
+    const { propertyId } = req.body || {};
+
+    if (!propertyId || isNaN(Number(propertyId))) {
+      return sendResponse(res, {
+        success: false,
+        statusCode: httpStatus.BAD_REQUEST,
+        message: "Please provide a valid propertyId in the request body!",
+        data: null
+      });
+    }
 
     const result = await rentalRequestService.createRentelRequestIntoDB(
       Number(userId),
