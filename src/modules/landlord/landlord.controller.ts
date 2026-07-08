@@ -62,8 +62,24 @@ const deleteProperty = catchAsync(
   },
 );
 
+const getRentalRequests = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const id = req.user?.id;
+
+    const result = await landLordService.getRentalRequestsFromDB(Number(id));
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Rental requests retrived successfully!",
+      data: result,
+    });
+  },
+);
+
 export const landLordController = {
   createProperty,
   updateProperty,
   deleteProperty,
+  getRentalRequests,
 };
