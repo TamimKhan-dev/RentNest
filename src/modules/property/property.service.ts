@@ -37,6 +37,20 @@ const getAllPropertiesFromDB = async (query: IPropertyQuery) => {
   return allProperties;
 };
 
+const getSinglePropertyFromDB = async (id: number) => {
+    const property = await prisma.property.findUnique({
+        where: { id }
+    });
+
+    if (!property) {
+        throw new Error("Property does not Exist!");
+    };
+
+
+    return property;
+};
+
 export const propertyService = {
   getAllPropertiesFromDB,
+  getSinglePropertyFromDB
 };
