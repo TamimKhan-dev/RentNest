@@ -1,3 +1,4 @@
+import { RentalRequestStatus } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 import {
   IPropertyDetailsPayload,
@@ -94,14 +95,48 @@ const getRentalRequestsFromDB = async (id: number) => {
         select: {
           id: true,
           name: true,
-          email: true
-        }
-      }  
+          email: true,
+        },
+      },
     },
-    orderBy: {createdAt: "desc"}
+    orderBy: { createdAt: "desc" },
   });
 
   return property;
+};
+
+const updateRentalRequestStatusIntoDB = async (
+  rentalRequestId: number,
+  landlordId: number,
+  newStatus: RentalRequestStatus,
+) => {
+  const rentalRequest = await prisma.rentalRequest.findUnique({
+    where: { id: rentalRequestId },
+    include: { property: true },
+  });
+
+  if (newStatus !== "APPROVED" && newStatus !== "REJECTED") {
+    throw new Error(
+      "Invalid status update! Landlords can only set status to APPROVED or REJECTED.",
+    );
+  }
+
+  if (!rentalRequest) {
+    throw new Error("Rental request with this ID doesn't Exist");
+  }
+
+  if (rentalRequest?.property.ownerId !== landlordId) {
+    throw new Error(
+      "You don't own this property that's why you can't update it's status",
+    );
+  }
+
+  const result = await prisma.rentalRequest.update({
+    where: { id: rentalRequestId },
+    data: { status: newStatus },
+  });
+
+  return result;
 };
 
 export const landLordService = {
@@ -109,4 +144,5 @@ export const landLordService = {
   updatePropertyIntoDB,
   deletePropertyFromDB,
   getRentalRequestsFromDB,
+  updateRentalRequestStatusIntoDB,
 };

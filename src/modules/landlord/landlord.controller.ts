@@ -3,6 +3,7 @@ import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import httpStatus from "http-status";
 import { landLordService } from "./landlord.service";
+import { RentalRequestStatus } from "../../../generated/prisma/enums";
 
 const createProperty = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -77,9 +78,40 @@ const getRentalRequests = catchAsync(
   },
 );
 
+const updateRentalRequestStatus = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const rentalRequestId = req.params.id;
+    const landlordId = req.user?.id;
+    const { status } = req.body;
+
+    if (!status) {
+      return sendResponse(res, {
+        success: false,
+        statusCode: httpStatus.BAD_REQUEST,
+        message: "Provide a valid status to update either pending or approved!",
+        data: null
+      });
+    }
+
+    const result = await landLordService.updateRentalRequestStatusIntoDB(
+      Number(rentalRequestId),
+      Number(landlordId),
+      status.toUpperCase() as RentalRequestStatus,
+    );
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Rental requests status updated successfully!",
+      data: result,
+    });
+  },
+);
+
 export const landLordController = {
   createProperty,
   updateProperty,
   deleteProperty,
   getRentalRequests,
+  updateRentalRequestStatus,
 };
