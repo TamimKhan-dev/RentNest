@@ -17,6 +17,32 @@ const getAllUsers = catchAsync(
   },
 );
 
+const updateUserIsBanStatus = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const id = req.params.id;
+    const { isBanned } = req.body;
+
+    if (isBanned === undefined || typeof isBanned !== 'boolean') {
+      return sendResponse(res, {
+        success: false,
+        statusCode: httpStatus.BAD_REQUEST,
+        message: "You have to must provide a Boolean value false(unban), true(ban)!",
+        data: null
+      });
+    }
+
+    const result = await adminService.updateUserIsBanStatusIntoDB(Number(id), isBanned);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "User ban status updated successfully!",
+      data: result,
+    });
+  },
+);
+
 export const adminController = {
   getAllUsers,
+  updateUserIsBanStatus,
 };
