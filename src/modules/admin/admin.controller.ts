@@ -72,8 +72,40 @@ const getAllRentalRequests = catchAsync(
   },
 );
 
+const createCategory = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { name } = req.body;
+
+    const result = await adminService.createCategoryIntoDB(name);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Category added successfully!",
+      data: result,
+    });
+  },
+);
+
+const deleteCategory = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+
+    const result = await adminService.deleteCategoryFromDB(Number(id));
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Category deleted successfully!",
+      data: result,
+    });
+  },
+);
+
 export const adminController = {
   getAllUsers,
+  createCategory,
+  deleteCategory,
   getAllProperties,
   getAllRentalRequests,
   updateUserIsBanStatus,

@@ -33,15 +33,53 @@ const getAllPropertiesFromDB = async () => {
 };
 
 const getAllRentalRequestsFromDB = async () => {
-    const result = await prisma.rentalRequest.findMany();
+  const result = await prisma.rentalRequest.findMany();
+
+  return result;
+};
+
+const createCategoryIntoDB = async (categoryName: string) => {
+  const existingCategory = await prisma.category.findFirst({
+    where: {
+      name: {
+        equals: categoryName,
+        mode: "insensitive",
+      },
+    },
+  });
+
+  if (existingCategory) {
+    throw new Error("This category already exists!");
+  };
+
+  const result = await prisma.category.create({
+    data: { name: categoryName }
+  });
+
+  return result;
+};
+
+const deleteCategoryFromDB = async (id: number) => {
+    const isCategoryExist = await prisma.category.findUnique({
+        where: { id }
+    });
+
+    if (!isCategoryExist) {
+        throw new Error("Category with this ID doesn't exist!");
+    };
+
+    const result = await prisma.category.delete({
+        where: { id }
+    });
 
     return result;
 };
 
-
 export const adminService = {
   getAllUsersFromDB,
+  deleteCategoryFromDB,
+  createCategoryIntoDB,
   getAllPropertiesFromDB,
   getAllRentalRequestsFromDB,
-  updateUserIsBanStatusIntoDB
+  updateUserIsBanStatusIntoDB,
 };
