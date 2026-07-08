@@ -44,7 +44,20 @@ const getUsersRentalRequestFromDB = async (id: number) => {
     return rentalRequests;
 };
 
+const getSingleRentalRequestFromDB = async (id: number) => {
+  const rentalRequest = await prisma.rentalRequest.findUnique({
+    where: { id }
+  });
+
+  if (!rentalRequest) {
+    throw new Error("Rental request with this ID doesn't Exist!");
+  };
+
+  return rentalRequest;
+};
+
 export const rentalRequestService = {
   createRentelRequestIntoDB,
   getUsersRentalRequestFromDB,
+  getSingleRentalRequestFromDB
 };
