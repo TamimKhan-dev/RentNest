@@ -36,6 +36,15 @@ const createRentelRequestIntoDB = async (
   return result;
 };
 
+const getUsersRentalRequestFromDB = async (id: number) => {
+    const rentalRequests = await prisma.rentalRequest.findMany({
+        where: { tenantId: id }
+    });
+
+    return rentalRequests;
+};
+
 export const rentalRequestService = {
   createRentelRequestIntoDB,
+  getUsersRentalRequestFromDB,
 };

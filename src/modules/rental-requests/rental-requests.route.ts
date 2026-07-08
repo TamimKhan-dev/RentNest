@@ -6,5 +6,6 @@ import { rentalRequestController } from "./rental-requests.controller";
 const router = Router();
 
 router.post("/", auth(UserRole.TENANT), rentalRequestController.createRentalRequest);
+router.get("/", auth(UserRole.TENANT), rentalRequestController.getUsersRentalRequests)
 
 export const rentalRequestRoutes = router;

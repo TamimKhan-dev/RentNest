@@ -14,7 +14,7 @@ const createRentalRequest = catchAsync(
         success: false,
         statusCode: httpStatus.BAD_REQUEST,
         message: "Please provide a valid propertyId in the request body!",
-        data: null
+        data: null,
       });
     }
 
@@ -32,6 +32,24 @@ const createRentalRequest = catchAsync(
   },
 );
 
+const getUsersRentalRequests = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const id = req.user?.id;
+
+    const result = await rentalRequestService.getUsersRentalRequestFromDB(
+      Number(id),
+    );
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Rental request retrived successfully!",
+      data: result,
+    });
+  },
+);
+
 export const rentalRequestController = {
   createRentalRequest,
+  getUsersRentalRequests,
 };
