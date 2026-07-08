@@ -32,6 +32,9 @@ const getAllPropertiesFromDB = async (query: IPropertyQuery) => {
 
   const allProperties = await prisma.property.findMany({
     where: orConditions.length > 0 ? { OR: orConditions } : {},
+    include: {
+        category: { select: { name: true }}
+    }
   });
 
   return allProperties;
@@ -39,7 +42,10 @@ const getAllPropertiesFromDB = async (query: IPropertyQuery) => {
 
 const getSinglePropertyFromDB = async (id: number) => {
     const property = await prisma.property.findUnique({
-        where: { id }
+        where: { id },
+        include: { category: {
+            select: { name: true }
+        }}
     });
 
     if (!property) {
@@ -50,7 +56,15 @@ const getSinglePropertyFromDB = async (id: number) => {
     return property;
 };
 
+const getAllCategoriesFromDB = async () => {
+    const categories = await prisma.category.findMany();
+
+
+    return categories;
+};
+
 export const propertyService = {
   getAllPropertiesFromDB,
-  getSinglePropertyFromDB
+  getSinglePropertyFromDB,
+  getAllCategoriesFromDB
 };
