@@ -13,6 +13,8 @@ import { paymentRoutes } from "./modules/payment/payment.route";
 
 const app: Application = express();
 
+app.use("/api/payments/confirm/webhook", express.raw({type: 'application/json'}));
+
 app.use(
   cors({
     origin: config.app_url,
