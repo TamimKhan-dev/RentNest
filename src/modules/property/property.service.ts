@@ -3,24 +3,36 @@ import { prisma } from "../../lib/prisma";
 import { IPropertyQuery } from "./property.interface";
 
 const getAllPropertiesFromDB = async (query: IPropertyQuery) => {
-  const { location, price, type } = query;
+  const {
+    location,
+    minPrice,
+    maxPrice,
+    type,
+    amenities,
+  } = query;
 
-  const orConditions: PropertyWhereInput[] = [];
+  const andConditions: PropertyWhereInput[] = [];
 
   if (location) {
-    orConditions.push({
-      location: { contains: location, mode: "insensitive" },
+    andConditions.push({
+      location: {
+        contains: location,
+        mode: "insensitive",
+      },
     });
   }
 
-  if (price) {
-    orConditions.push({
-      price: { equals: Number(price) },
+  if (minPrice || maxPrice) {
+    andConditions.push({
+      price: {
+        ...(minPrice && { gte: Number(minPrice) }),
+        ...(maxPrice && { lte: Number(maxPrice) }),
+      },
     });
   }
 
   if (type) {
-    orConditions.push({
+    andConditions.push({
       category: {
         name: {
           contains: type,
@@ -30,14 +42,34 @@ const getAllPropertiesFromDB = async (query: IPropertyQuery) => {
     });
   }
 
-  const allProperties = await prisma.property.findMany({
-    where: orConditions.length > 0 ? { OR: orConditions } : {},
+  if (amenities) {
+    const amenitiesArray = amenities
+      .split(",")
+      .map((item: string) => item.trim());
+
+    andConditions.push({
+      amenities: {
+        hasSome: amenitiesArray,
+      },
+    });
+  }
+
+  const properties = await prisma.property.findMany({
+    where: andConditions.length
+      ? {
+          AND: andConditions,
+        }
+      : {},
     include: {
-        category: { select: { name: true }}
-    }
+      category: {
+        select: {
+          name: true,
+        },
+      },
+    },
   });
 
-  return allProperties;
+  return properties;
 };
 
 const getSinglePropertyFromDB = async (id: number) => {
