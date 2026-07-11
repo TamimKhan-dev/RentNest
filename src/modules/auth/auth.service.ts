@@ -39,9 +39,13 @@ const registerUserIntoDB = async (payload: IUserPayload) => {
 const loginUserFromDB = async (payload: ILoginPayload) => {
   const { email, password } = payload;
 
-  const user = await prisma.user.findUniqueOrThrow({
+  const user = await prisma.user.findUnique({
     where: { email },
   });
+
+  if (!user) {
+    throw new Error("User doesn't Exist!");
+  };
 
   const isPasswordMatched = await bcrypt.compare(password, user.password);
 
