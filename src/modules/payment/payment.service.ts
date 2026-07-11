@@ -73,6 +73,38 @@ const createCheckoutSessionIntoDB = async (
   };
 };
 
+const getAllPaymentHistoryFromDB = async (tenantId: number, role: string) => {
+  if (role === "ADMIN") {
+    return await prisma.payment.findMany();
+  } else {
+    return await prisma.payment.findMany({
+      where: { rentalRequest: { tenantId } },
+    });
+  }
+};
+
+const getSinglePaymentDetailsFromDB = async (
+  tenantId: number,
+  paymentId: number,
+  role: string,
+) => {
+  if (role === "ADMIN") {
+    return await prisma.payment.findUnique({
+      where: { id: paymentId },
+    });
+  } else {
+    const payment = await prisma.payment.findFirst({
+      where: { id: paymentId, rentalRequest: { tenantId } },
+    });
+
+    if (!payment) {
+      throw new Error("Payment not found.");
+    }
+
+    return payment;
+  }
+};
+
 const handleWebhook = async (payload: Buffer, signature: string) => {
   const endpointSecret = config.stripe_webhook_secret;
   const event = stripe.webhooks.constructEvent(
@@ -93,5 +125,7 @@ const handleWebhook = async (payload: Buffer, signature: string) => {
 
 export const paymentService = {
   handleWebhook,
+  getSinglePaymentDetailsFromDB,
+  getAllPaymentHistoryFromDB,
   createCheckoutSessionIntoDB,
 };

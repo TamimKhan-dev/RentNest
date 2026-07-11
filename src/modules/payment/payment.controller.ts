@@ -32,6 +32,44 @@ const createPaymentIntent = catchAsync(
   },
 );
 
+const getAllPaymentHistory = catchAsync(
+  async (req: Request, res: Response) => {
+    const user = req.user;
+
+    const result = await paymentService.getAllPaymentHistoryFromDB(
+      Number(user?.id),
+      user?.role as string,
+    );
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Payment history retrieved successfully",
+      data: result,
+    });
+  },
+);
+
+const getSinglePaymentDetails = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+        const user = req.user;
+        const paymentId = req.params.id;
+
+    const result = await paymentService.getSinglePaymentDetailsFromDB(
+      Number(user?.id),
+      Number(paymentId),
+      user?.role as string,
+    );
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Payment details retrieved successfully",
+      data: result,
+    });
+  },
+);
+
 const handleWebhook = catchAsync(
  async( req : Request, res : Response, next : NextFunction) => {
         const event = req.body as Buffer;
@@ -50,5 +88,7 @@ const handleWebhook = catchAsync(
 
 export const paymentController = {
   handleWebhook,
+  getSinglePaymentDetails,
+  getAllPaymentHistory,
   createPaymentIntent,
 };
