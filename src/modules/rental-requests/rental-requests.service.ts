@@ -37,27 +37,54 @@ const createRentelRequestIntoDB = async (
 };
 
 const getUsersRentalRequestFromDB = async (id: number) => {
-    const rentalRequests = await prisma.rentalRequest.findMany({
-        where: { tenantId: id }
-    });
+  const rentalRequests = await prisma.rentalRequest.findMany({
+    where: { tenantId: id },
+  });
 
-    return rentalRequests;
+  return rentalRequests;
 };
 
 const getSingleRentalRequestFromDB = async (id: number) => {
   const rentalRequest = await prisma.rentalRequest.findUnique({
-    where: { id }
+    where: { id },
   });
 
   if (!rentalRequest) {
     throw new Error("Rental request with this ID doesn't Exist!");
-  };
+  }
 
   return rentalRequest;
+};
+
+const completeRentalRequestIntoDB = async (
+  rentalRequestId: number,
+  tenantId: number,
+) => {
+  const rentalRequest = await prisma.rentalRequest.findUnique({
+    where: { id: rentalRequestId, tenantId },
+  });
+
+  if (!rentalRequest) {
+    throw new Error("Rental request not found");
+  }
+
+  if (rentalRequest.status !== "ACTIVE") {
+    throw new Error(
+      `This rental request is currently ${rentalRequest.status}. Only ACTIVE rental requests can be marked as COMPLETED.`,
+    );
+  };
+
+  const updatedRequest = await prisma.rentalRequest.update({
+    where: { id: rentalRequestId },
+    data: { status: "COMPLETED" },
+  });
+
+  return updatedRequest;
 };
 
 export const rentalRequestService = {
   createRentelRequestIntoDB,
   getUsersRentalRequestFromDB,
-  getSingleRentalRequestFromDB
+  completeRentalRequestIntoDB,
+  getSingleRentalRequestFromDB,
 };

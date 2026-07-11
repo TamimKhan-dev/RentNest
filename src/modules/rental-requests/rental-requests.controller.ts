@@ -64,8 +64,25 @@ const getSingleRentalRequest = catchAsync(
   },
 );
 
+const completeRentalRequest = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const rentalRequestId = req.params.id;
+    const tenantId = req.user?.id;
+
+    const result = await rentalRequestService.completeRentalRequestIntoDB(Number(rentalRequestId), Number(tenantId));
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Rental request Completed!",
+      data: result,
+    });
+  },
+);
+
 export const rentalRequestController = {
   createRentalRequest,
+  completeRentalRequest,
+  getSingleRentalRequest,
   getUsersRentalRequests,
-  getSingleRentalRequest
 };
