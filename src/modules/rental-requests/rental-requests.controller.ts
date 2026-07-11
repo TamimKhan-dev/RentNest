@@ -52,8 +52,9 @@ const getUsersRentalRequests = catchAsync(
 const getSingleRentalRequest = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const id = req.params.id;
+    const tenantId = req.user?.id;
 
-    const result = await rentalRequestService.getSingleRentalRequestFromDB(Number(id));
+    const result = await rentalRequestService.getSingleRentalRequestFromDB(Number(id), Number(tenantId));
 
     sendResponse(res, {
       success: true,

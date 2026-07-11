@@ -40,6 +40,9 @@ const updatePropertyIntoDB = async (
   landLordId: number,
   payload: IUpdatePropertyPayload,
 ) => {
+  const { title, description, price, location, amenities, categoryId } =
+    payload;
+
   const property = await prisma.property.findUnique({
     where: { id: propertyId },
   });
@@ -55,7 +58,12 @@ const updatePropertyIntoDB = async (
   const result = await prisma.property.update({
     where: { id: propertyId },
     data: {
-      ...payload,
+      title,
+      description,
+      price,
+      location,
+      amenities,
+      categoryId,
     },
   });
 

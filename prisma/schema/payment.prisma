@@ -1,7 +1,7 @@
 model Payment {
   id Int @id @default(autoincrement())
 
-  rentalRequestId Int
+  rentalRequestId Int  @unique
   rentalRequest   RentalRequest @relation(fields: [rentalRequestId], references: [id], onDelete: Cascade)
 
   transactionId String   @unique

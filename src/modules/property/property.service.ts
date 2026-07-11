@@ -49,7 +49,7 @@ const getAllPropertiesFromDB = async (query: IPropertyQuery) => {
 
     andConditions.push({
       amenities: {
-        hasSome: amenitiesArray,
+        hasEvery: amenitiesArray
       },
     });
   }
@@ -57,9 +57,10 @@ const getAllPropertiesFromDB = async (query: IPropertyQuery) => {
   const properties = await prisma.property.findMany({
     where: andConditions.length
       ? {
+          isAvailable: true,
           AND: andConditions,
         }
-      : {},
+      : { isAvailable: true },
     include: {
       category: {
         select: {

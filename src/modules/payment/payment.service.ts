@@ -58,15 +58,31 @@ const createCheckoutSessionIntoDB = async (
     cancel_url: "http://localhost:3000/payment/cancel",
   });
 
-  await prisma.payment.create({
-    data: {
-      rentalRequestId,
-      transactionId: session.id,
-      amount: rentalRequest.property.price,
-      status: "PENDING",
-      provider: "stripe",
-    },
-  });
+  const existingPayment = rentalRequest.payments[0];
+
+  if (existingPayment) {
+    await prisma.payment.update({
+      where: {
+        id: existingPayment.id,
+      },
+      data: {
+        transactionId: session.id,
+        amount: rentalRequest.property.price,
+        status: "PENDING",
+        provider: "stripe",
+      },
+    });
+  } else {
+    await prisma.payment.create({
+      data: {
+        rentalRequestId,
+        transactionId: session.id,
+        amount: rentalRequest.property.price,
+        status: "PENDING",
+        provider: "stripe",
+      },
+    });
+  }
 
   return {
     paymentUrl: session.url,

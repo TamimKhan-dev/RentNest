@@ -44,9 +44,9 @@ const getUsersRentalRequestFromDB = async (id: number) => {
   return rentalRequests;
 };
 
-const getSingleRentalRequestFromDB = async (id: number) => {
+const getSingleRentalRequestFromDB = async (id: number, tenantId: number) => {
   const rentalRequest = await prisma.rentalRequest.findUnique({
-    where: { id },
+    where: { id, tenantId },
   });
 
   if (!rentalRequest) {
