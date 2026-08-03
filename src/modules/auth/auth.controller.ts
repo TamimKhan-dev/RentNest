@@ -9,9 +9,9 @@ const registerUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     let role: UserRole;
 
-    if (req.body.role === "tenant") {
+    if (req.body.role.toUpperCase() === "TENANT") {
       role = UserRole.TENANT;
-    } else if (req.body.role === "landlord") {
+    } else if (req.body.role.toUpperCase() === "LANDLORD") {
       role = UserRole.LANDLORD;
     } else {
       return sendResponse(res, {
@@ -25,7 +25,7 @@ const registerUser = catchAsync(
 
     const payload = {
       ...req.body,
-      role: role,
+      role: role.toUpperCase(),
     };
 
     const result = await authService.registerUserIntoDB(payload);
@@ -48,14 +48,14 @@ const loginUser = catchAsync(
 
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: "none",
       maxAge: 1000 * 60 * 60 * 24, // 24 hour
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: "none",
       maxAge: 1000 * 60 * 60 * 24 * 7, // 7 day
     });

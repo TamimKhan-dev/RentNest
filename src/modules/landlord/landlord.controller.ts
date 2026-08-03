@@ -23,6 +23,21 @@ const createProperty = catchAsync(
   },
 );
 
+const getMyProperty = catchAsync(
+   async (req: Request, res: Response, next: NextFunction) => {
+    const id = req.user?.id;
+
+    const result = await landLordService.getMyPropertyFromDB(Number(id));
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Properties requests retrived successfully!",
+      data: result,
+    });
+  },
+);
+
 const updateProperty = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const payload = req.body;
@@ -112,6 +127,7 @@ export const landLordController = {
   createProperty,
   updateProperty,
   deleteProperty,
+  getMyProperty,
   getRentalRequests,
   updateRentalRequestStatus,
 };

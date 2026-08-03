@@ -54,8 +54,8 @@ const createCheckoutSessionIntoDB = async (
       tenantId: userId.toString(),
     },
 
-    success_url: "http://localhost:3000/payment/success",
-    cancel_url: "http://localhost:3000/payment/cancel",
+    success_url: `${config.app_url}/payment/success`,
+    cancel_url: `${config.app_url}/payment/cancel`,
   });
 
   const existingPayment = rentalRequest.payments[0];

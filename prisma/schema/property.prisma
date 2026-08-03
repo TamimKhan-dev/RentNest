@@ -6,7 +6,7 @@ model Property {
   location    String   @db.VarChar(255)
   amenities   String[]
   isAvailable Boolean  @default(true)
-
+  image       String?
   categoryId Int?
   category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
 

@@ -35,6 +35,15 @@ const createPropertyIntoDB = async (
   return result;
 };
 
+const getMyPropertyFromDB = async (id: number) => {
+    const property = await prisma.property.findMany({
+    where: { ownerId: id },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return property;
+};
+
 const updatePropertyIntoDB = async (
   propertyId: number,
   landLordId: number,
@@ -152,5 +161,6 @@ export const landLordService = {
   updatePropertyIntoDB,
   deletePropertyFromDB,
   getRentalRequestsFromDB,
+  getMyPropertyFromDB,
   updateRentalRequestStatusIntoDB,
 };

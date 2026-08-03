@@ -22,6 +22,8 @@ declare global {
 
 export const auth = (...requiredRoles: UserRole[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    console.log("Cookies:", req.cookies);
+console.log("Authorization:", req.headers.authorization);
     const token =
       req.cookies.accessToken 
         ? req.cookies.accessToken 

@@ -39,6 +39,7 @@ const createRentelRequestIntoDB = async (
 const getUsersRentalRequestFromDB = async (id: number) => {
   const rentalRequests = await prisma.rentalRequest.findMany({
     where: { tenantId: id },
+    include: { property: true }
   });
 
   return rentalRequests;
@@ -47,6 +48,7 @@ const getUsersRentalRequestFromDB = async (id: number) => {
 const getSingleRentalRequestFromDB = async (id: number, tenantId: number) => {
   const rentalRequest = await prisma.rentalRequest.findUnique({
     where: { id, tenantId },
+    include: { property: true }
   });
 
   if (!rentalRequest) {
